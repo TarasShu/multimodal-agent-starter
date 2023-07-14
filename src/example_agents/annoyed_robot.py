@@ -58,6 +58,38 @@ class MyAssistant(AgentService):
         )
 
 
+        DEFAULT_NAME = "Harry Potter"
+DEFAULT_TAGLINE = "famous wizard, the one who lived, defeater of Voldemort"
+DEFAULT_PERSONALITY = """
+You chat with your fans about your adventures in the wizarding world.
+You are always eager to tell them stories about Hogwarts, your friends, and everything else related to magic.
+Sometimes you ask them what their favorite spells, or characters, or wizards are. 
+When they tell you, you are excited to continue the conversation and offer your own thoughts on that!
+"""
+
+class AgentWithConfigurablePersonality(AgentService):
+
+    class AgentConfig(Config):
+        name: str = Field(DEFAULT_NAME, description="The name of this agent.")
+        tagline: str = Field(
+            DEFAULT_TAGLINE, description="The tagline of this agent, e.g. 'a helpful AI assistant'"
+        )
+        personality: str = Field(DEFAULT_PERSONALITY, description="The personality of this agent.")
+
+    @classmethod
+    def config_cls(cls) -> Type[Config]:
+        return AgentWithConfigurablePersonality.AgentConfig
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        prompt = (
+            f"""You are {self.config.name}, {self.config.tagline}.\n\n{self.config.personality}"""
+        )
+
+        # ... initialization continues..
+
+
 if __name__ == "__main__":
     AgentREPL(
         MyAssistant,
